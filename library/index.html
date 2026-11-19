@@ -5,4 +5,4 @@ input{width:100%;max-width:420px;padding:10px 14px;border:2px solid #D5E2F3;bord
 <body><h1>MemoRise picture library</h1><p id="n">Loading…</p><input id="q" placeholder="Search an English meaning…" oninput="draw()"><div class="g" id="g"></div>
 <script>let L={};fetch('illib.json').then(r=>r.json()).then(j=>{L=j.lib||j;draw()});
 function draw(){const q=document.getElementById('q').value.trim().toLowerCase(),k=Object.keys(L).filter(x=>!q||x.includes(q));document.getElementById('n').textContent=k.length+' of '+Object.keys(L).length+' pictures · one picture per English meaning, shared by every course';
-document.getElementById('g').innerHTML=k.slice(0,400).map(x=>`<div class="c"><img alt="" src="data:image/svg+xml;utf8,${encodeURIComponent(L[x])}">${x.replace(/</g,'&lt;')}</div>`).join('')}</script></body></html>
+document.getElementById('g').innerHTML=k.slice(0,400).map(x=>`<div class="c"><img alt="" src="${/^data:/.test(L[x])?L[x]:'data:image/svg+xml;utf8,'+encodeURIComponent(L[x])}">${x.replace(/</g,'&lt;')}</div>`).join('')}</script></body></html>
