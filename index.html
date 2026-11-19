@@ -1559,7 +1559,9 @@ const EMO={hello:'👋',goodbye:'👋',yes:'👍',no:'🙅',please:'🙏','thank
 function emoFor(c){for(const k of ckKeys(cEn(c))){if(EMO[k])return EMO[k]}return null}
 function lcard(c,s){const t=cEn(c).replace(/\([^)]*\)/g,'').replace(/^\s*(to|a|an|the)\s+/i,'').trim(),ch=(Array.from(t)[0]||'?').toUpperCase();let h=0;for(const x of t)h=(h*31+x.charCodeAt(0))%360;
   return`<span class="il lltr" style="width:${s}px;height:${s}px;font-size:${Math.round(s*.46)}px;--lh:${h}">${esc(ch)}</span>`}
-function imgFb(c,s){if(!c||c.iv===99||c.ru==null||(c.set===undefined&&c.ef===undefined))return''; /* cards only, never sentences */const e=emoFor(c);return e?`<span class="il emo" style="width:${s}px;height:${s}px;font-size:${Math.round(s*.66)}px">${e}</span>`:lcard(c,s)}
+function imgFb(c,s){if(!c||c.iv===99||c.ru==null||(c.set===undefined&&c.ef===undefined))return''; /* cards only, never sentences */
+  const L=illFor(c);if(L){c.img=L;c.iv=ILLV;c.u=Date.now();clearTimeout(imgFb.t);imgFb.t=setTimeout(save,400);return imgRaw(c,s)} /* step 1: picture library first */
+  const e=emoFor(c);return e?`<span class="il emo" style="width:${s}px;height:${s}px;font-size:${Math.round(s*.66)}px">${e}</span>`:lcard(c,s)}
 
 /* apply the MemoRise picture library: replaces older images once (iv = illustration version); custom uploads (iv 99) are kept */
 const svgFix=s=>String(s).replace(/\\"/g,'"').replace(/(\s[a-zA-Z-]+)"=?"?(?=[\d#.-])/g,'$1="'); /* ver_107: repairs a few broken drawings */
@@ -2047,7 +2049,7 @@ async function genGram(){const m=document.getElementById('dm'),btn=document.getE
     m.textContent=`Done! Filled in ${done} words.`}
   catch(e){m.textContent=(e&&e.code=='rate_limited'?'Rate limited, try again in a few minutes. ':e&&e.code=='not_granted'?'Permission was declined. ':'Something went wrong. ')+`Filled in ${done} words.`}
   setTimeout(dataView,1200)}
-function imp(){const sn=document.getElementById('sn').value.trim(),n=parse(document.getElementById('t').value,sn);document.getElementById('m').textContent=`Added ${n} new words${sn?' to "'+sn+'"':''}.`;setTimeout(vocab,700)}
+function imp(){const sn=document.getElementById('sn').value.trim(),n=parse(document.getElementById('t').value,sn);applyIll();document.getElementById('m').textContent=`Added ${n} new words${sn?' to "'+sn+'"':''}.`;setTimeout(vocab,700)}
 function fl(i){const f=i.files[0];if(!f)return;f.text().then(t=>{document.getElementById('t').value=t})}
 function del(i){S.dead[S.cards[i].k]=Date.now();S.cards.splice(i,1);save();vocab()}
 
